@@ -1,0 +1,6 @@
+name: atomshell
+version: 0.0.1
+description: A dart library for interfacing and building atom-shell applications.
+dependencies:
+  archive: any
+  args: any
