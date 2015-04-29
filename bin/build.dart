@@ -1,7 +1,7 @@
 library electron.build;
 import 'dart:io';
 import 'dart:convert';
-import 'package:electron/src/utils.dart';
+import 'src/utils.dart';
 
 Map package;
 

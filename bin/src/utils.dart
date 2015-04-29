@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:args/args.dart';
+import '../../packages/args/args.dart';
 
 String version = '0.25.1';
 String os;

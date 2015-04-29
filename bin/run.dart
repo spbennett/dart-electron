@@ -1,6 +1,6 @@
 library electron.run;
 import 'dart:io';
-import 'package:electron/src/utils.dart';
+import 'src/utils.dart';
 
 main([List<String> args]) {
   configureWithArgs(args);

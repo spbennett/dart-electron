@@ -2,7 +2,7 @@ library electron.get;
 import 'dart:async';
 import 'dart:io';
 import 'package:archive/archive.dart';
-import 'package:electron/src/utils.dart';
+import 'src/utils.dart';
 
 main([List<String> args]) {  
   configureWithArgs(args);
