@@ -1,6 +1,6 @@
-library atomshell.run;
+library electron.run;
 import 'dart:io';
-import 'package:atomshell/src/utils.dart';
+import 'package:electron/src/utils.dart';
 
 main([List<String> args]) {
   configureWithArgs(args);
@@ -9,18 +9,18 @@ main([List<String> args]) {
   
   
   
-  Directory downloadedAtomDir = new Directory('.cache/atom-shell-v${version}-${os}-${arch}');
-  if (downloadedAtomDir.existsSync() == false) {
-    print("Atom-shell has not been downloaded");
-    print("Please run 'pub run atomshell:get'");
+  Directory downloadedElectronDir = new Directory('.cache/electron-v${version}-${os}-${arch}');
+  if (downloadedElectronDir.existsSync() == false) {
+    print("electron has not been downloaded");
+    print("Please run 'pub run electron:get'");
     exit(1);
   }
   
-  File atomBin;
+  File electronBin;
     if (os == WIN)
-      Process.run('.cache/atom-shell-v${version}-${os}-${arch}/atom.exe',['build/web/']);
+      Process.run('.cache/electron-v${version}-${os}-${arch}/electron.exe',['build/web/']);
     else if (os == LINUX)
-      Process.run('.cache/atom-shell-v${version}-${os}-${arch}/atom',['build/web/']);
+      Process.run('.cache/electron-v${version}-${os}-${arch}/electron',['build/web/']);
     else if (os == LINUX)
-      Process.run('.cache/atom-shell-v${version}-${os}-${arch}/atom',['build/web/']);
+      Process.run('.cache/electron-v${version}-${os}-${arch}/electron',['build/web/']);
 }

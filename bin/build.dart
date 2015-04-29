@@ -1,7 +1,7 @@
-library atomshell.build;
+library electron.build;
 import 'dart:io';
 import 'dart:convert';
-import 'package:atomshell/src/utils.dart';
+import 'package:electron/src/utils.dart';
 
 Map package;
 
@@ -16,20 +16,17 @@ main([List<String> args]) {
     exit(1);
   }
   
-  Directory downloadedAtomDir = new Directory('.cache/atom-shell-v${version}-${os}-${arch}');
-  if (downloadedAtomDir.existsSync() == false) {
-    print("Atom-shell has not been downloaded");
-    print("Please run 'pub run atomshell:get (options)'");
+  Directory downloadedElectronDir = new Directory('.cache/electron-v${version}-${os}-${arch}');
+  if (downloadedElectronDir.existsSync() == false) {
+    print("electron has not been downloaded");
+    print("Please run 'pub run electron:get (options)'");
     exit(1);
   }
-  
-  
-  
+
   package = JSON.decode(packageFile.readAsStringSync());  
   
   packageApp();  
 }
-
 
 packageApp() {
   Directory web = new Directory('build/web');
@@ -39,18 +36,18 @@ packageApp() {
   }
   
   //Clean out old files.
-  Directory atomshellDir = new Directory('.cache/atom-shell-v${version}-${os}-${arch}');
+  Directory electronDir = new Directory('.cache/electron-v${version}-${os}-${arch}');
   Directory leftovers = new Directory('dist/${os}-${arch}');
   if (leftovers.existsSync()) leftovers.deleteSync(recursive: true);
-  copyDirectory(atomshellDir, 'dist/${os}-${arch}');
+  copyDirectory(electronDir, 'dist/${os}-${arch}');
   
   print('Renaming executable');
-  File atomBin;
+  File electronBin;
   if (os == WIN)
-    atomBin = new File('dist/${os}-${arch}/atom.exe');
+    electronBin = new File('dist/${os}-${arch}/electron.exe');
   else
-    atomBin = new File('dist/${os}-${arch}/atom');
-  atomBin.rename(atomBin.path.replaceAll('atom', package['name']));
+    electronBin = new File('dist/${os}-${arch}/electron');
+  electronBin.rename(electronBin.path.replaceAll('electron', package['name']));
 
   if (os == LINUX || os == OSX){
     print('Updating file permissions.');
@@ -64,5 +61,5 @@ packageApp() {
   if (os == WIN || os == LINUX)
     copyDirectory(app, 'dist/${os}-${arch}/resources/app');
   else if (os == OSX)
-    copyDirectory(app, 'dist/${os}-${arch}/Atom.app/Contents/Resources/app');
+    copyDirectory(app, 'dist/${os}-${arch}/Electron.app/Contents/Resources/app');
 }

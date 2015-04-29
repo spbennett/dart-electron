@@ -1,8 +1,8 @@
-library atomshell.get;
+library electron.get;
 import 'dart:async';
 import 'dart:io';
 import 'package:archive/archive.dart';
-import 'package:atomshell/src/utils.dart';
+import 'package:electron/src/utils.dart';
 
 main([List<String> args]) {  
   configureWithArgs(args);
@@ -12,28 +12,28 @@ main([List<String> args]) {
 }
 
 Future downloadShell() {
-  if (new File('.cache/atom-shell-v${version}-${os}-${arch}.zip').existsSync()) {      
+  if (new File('.cache/electron-v${version}-${os}-${arch}.zip').existsSync()) {
     return new Future(() => print('Found in cache.'));
   }
   new Directory('.cache').createSync(recursive: true);
   
   String url = 
-      'https://github.com/atom/atom-shell/releases/download/v${version}/atom-shell-v${version}-${os}-${arch}.zip';
+      'https://github.com/atom/electron/releases/download/v${version}/electron-v${version}-${os}-${arch}.zip';
 
-  print('Downloading atom-shell..');
+  print('Downloading electron..');
   return new HttpClient().getUrl(Uri.parse(url))
       .then((HttpClientRequest request) => request.close())
-      .then((HttpClientResponse response) => response.pipe(new File('.cache/atom-shell-v${version}-${os}-${arch}.zip').openWrite()))
+      .then((HttpClientResponse response) => response.pipe(new File('.cache/electron-v${version}-${os}-${arch}.zip').openWrite()))
       .then((_) => print('..done'));
 }
 
 unzipShell() {
-  if (new Directory('.cache/atom-shell-v${version}-${os}-${arch}').existsSync()) {      
+  if (new Directory('.cache/electron-v${version}-${os}-${arch}').existsSync()) {
     return;
   }
   
   print('Extracting files (This takes a while)..');
-  File archive = new File('.cache/atom-shell-v${version}-${os}-${arch}.zip');
+  File archive = new File('.cache/electron-v${version}-${os}-${arch}.zip');
   List<int> bytes = archive.readAsBytesSync();
   Archive runnerArchive;
   
@@ -41,13 +41,13 @@ unzipShell() {
   for (ArchiveFile file in runnerArchive) {
     String filename = file.name;
     List<int> data = file.content;
-    new File('.cache/atom-shell-v${version}-${os}-${arch}/$filename')
+    new File('.cache/electron-v${version}-${os}-${arch}/$filename')
         ..createSync(recursive: true)
         ..writeAsBytesSync(data);
   }
   
   if (os == LINUX || os == OSX){
     print('Updating file permissions.');
-    Process.runSync('chmod', ['777', '.cache/atom-shell-v${version}-${os}-${arch}/atom']);
+    Process.runSync('chmod', ['777', '.cache/electron-v${version}-${os}-${arch}/electron']);
   }
 }
