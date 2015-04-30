@@ -9,14 +9,14 @@ To use this package, add it to your pubspec.yaml.
 
 # API
 
-Eventually, I expect there will be some libs here to interface with atom-shell's
+Eventually, I expect there will be some libs here to interface with electron's
 JavaScript APIs. For now, however, all we have are these packaging commands.
 
 
 # Commands
 
 From the command line 'cd' into your project.
-There are four commands you can run to build and test with atom-shell.
+There are four commands you can run to build and test with electron.
 
 ### Options
 All the commands that take options, take the same options.
