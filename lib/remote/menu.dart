@@ -4,40 +4,51 @@ import 'dart:js';
 import 'dart:html';
 import 'package:electron/remote.dart';
 
-// TODO , This is a WIP understanding of how dart can work with the menu-item api
+class Menu {
+  JsObject JsMenu;
+  Remote _remote = new Remote();
 
-testMenu() {
+  Menu() {
+    JsObject menu = _remote.require('menu');
+    JsMenu = new JsObject(menu);
+  }
 
-  context['jsTrigger_'] = new JsFunction.withThis(() => print('test'));
-
-  Remote remote = new Remote();
-
-  JsObject Menu = remote.require('menu');
-
-  JsObject MenuItem = remote.require('menu-item');
-
-  var menu = new JsObject(Menu);
-
-  print('new JsObject Menu');
-
-  menu.callMethod('append',
-    [new JsObject
-      (
-          MenuItem,
-        [
-          new JsObject.jsify({
-            'label': 'MenuItem 1',
-            'click': context['jsTrigger_'].apply()
-          })
-        ]
-      )
-    ]
-  );
+  append(MenuItem menuItem) {
+    JsMenu.callMethod('append', [menuItem.JsMenuItem]);
+  }
 
 
-  window.addEventListener('contextmenu', (e) {
-    e.preventDefault();
-    menu.callMethod('popup',[remote.getCurrentWindow()]);
-  });
+  popup({int x, int y}) {
+    JsMenu.callMethod('popup', [_remote.getCurrentWindow()]);
+  }
+}
 
+
+
+class MenuItem {
+  JsObject JsMenuItem;
+  Remote _remote = new Remote();
+
+  String type;
+  String label;
+  String subLabel;
+  String accelerator;
+
+  bool visible;
+  bool checked;
+  Menu subMenu;
+
+  MenuItem(Map options) {
+    JsObject menuItem = _remote.require('menu-item');
+
+    // replace the dart subMenu with a JS subMenu
+    if (options['submenu'] != null) {
+      JsObject sub = options['submenu'].JsMenu;
+      options['submenu'] = sub;
+    }
+
+    JsMenuItem = new JsObject(menuItem,
+    [new JsObject.jsify(options)]);
+    print('created menuItem: $options');
+  }
 }
