@@ -18,56 +18,36 @@ Future downloadShell() {
   new Directory('.cache').createSync(recursive: true);
 
   String url =
-      'https://github.com/atom/electron/releases/download/v${version}/electron-v${version}-${os}-${arch}.zip';
+  'https://github.com/atom/electron/releases/download/v${version}/electron-v${version}-${os}-${arch}.zip';
 
   print('Downloading electron..');
   return new HttpClient().getUrl(Uri.parse(url))
-      .then((HttpClientRequest request) => request.close())
-      .then((HttpClientResponse response) => response.pipe(new File('.cache/electron-v${version}-${os}-${arch}.zip').openWrite()))
-      .then((_) => print('..done'));
+  .then((HttpClientRequest request) => request.close())
+  .then((HttpClientResponse response) => response.pipe(new File('.cache/electron-v${version}-${os}-${arch}.zip').openWrite()))
+  .then((_) => print('..done'));
 }
 
 unzipShell() {
-  String out = '.cache/electron-v${version}-${os}-${arch}';
-
-  if (new Directory(out).existsSync()) {
-    print('Electron already unzipped.  Skipping.');
+  if (new Directory('.cache/electron-v${version}-${os}-${arch}').existsSync()) {
     return;
   }
 
-  // Read the Zip file from disk.
-  File zip = new File('$out.zip');
-  List<int> bytes = zip.readAsBytesSync();
-
   print('Extracting files (This takes a while)..');
-  Archive archive = new ZipDecoder().decodeBytes(bytes);
-  for (ArchiveFile item in archive) {
+  File archive = new File('.cache/electron-v${version}-${os}-${arch}.zip');
+  List<int> bytes = archive.readAsBytesSync();
+  Archive runnerArchive;
+
+  runnerArchive = new ZipDecoder().decodeBytes(bytes);
+  for (ArchiveFile item in runnerArchive) {
     String name = item.name;
     List<int> data = item.content;
-    // We need to check if current item is a file or directory.
-    if (!name.endsWith('/')) {
-      // Current item is a file.
-      File currentFile = new File('$out/$name');
-      try {
-        currentFile.createSync(recursive: true);
-        currentFile.writeAsBytesSync(data);
-      } catch (e) {
-        print('Error: $e');
-        print('Deleting intermediate data.');
-        new Directory(out).deleteSync(recursive: true);
-        exit(1);
-      }
+    if(name.endsWith('/')) {
+      new Directory('.cache/electron-v${version}-${os}-${arch}/$name')
+        ..createSync(recursive: true);
     } else {
-      // Current item a directory.
-      Directory currentDirectory = new Directory('$out/$name');
-      try {
-        currentDirectory.createSync(recursive: true);
-      } catch (e) {
-        print('Error: $e');
-        print('Deleting intermediate data.');
-        new Directory(out).deleteSync(recursive: true);
-        exit(1);
-      }
+      new File('.cache/electron-v${version}-${os}-${arch}/$name')
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(data);
     }
   }
 
