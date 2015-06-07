@@ -1,7 +1,7 @@
 import 'dart:io';
 import '../../packages/args/args.dart';
 
-String version = '0.25.1';
+String version = '0.27.2';
 String os;
 String arch;
 
