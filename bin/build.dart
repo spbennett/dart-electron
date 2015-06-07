@@ -42,24 +42,31 @@ packageApp() {
   copyDirectory(electronDir, 'dist/${os}-${arch}');
   
   print('Renaming executable');
-  File electronBin;
-  if (os == WIN)
+  var electronBin;
+  if (os == WIN) {
     electronBin = new File('dist/${os}-${arch}/electron.exe');
-  else
+    electronBin.rename(electronBin.path.replaceAll('electron', package['name']));
+  } else if (os == OSX) {
+    electronBin = new Directory('dist/${os}-${arch}/Electron.app');
+    electronBin.rename(electronBin.path.replaceAll('Electron', package['name']));
+  } else {
     electronBin = new File('dist/${os}-${arch}/electron');
-  electronBin.rename(electronBin.path.replaceAll('electron', package['name']));
+    electronBin.rename(electronBin.path.replaceAll('electron', package['name']));
+  }
 
-  if (os == LINUX || os == OSX){
+  if (os == LINUX){
     print('Updating file permissions.');
     Process.runSync('chmod', ['777', 'dist/${os}-${arch}/${package['name']}']);
+  } else if (os == OSX) {
+    print('Updating file permissions.');
+    Process.runSync('chmod', ['777', 'dist/${os}-${arch}/${package['name']}.app']);
   }
   
   // Moving built App.
   Directory app = new Directory('build/web');
-  
-  
+
   if (os == WIN || os == LINUX)
     copyDirectory(app, 'dist/${os}-${arch}/resources/app');
   else if (os == OSX)
-    copyDirectory(app, 'dist/${os}-${arch}/Electron.app/Contents/Resources/app');
+    copyDirectory(app, 'dist/${os}-${arch}/${package['name']}.app/Contents/Resources/app');
 }
