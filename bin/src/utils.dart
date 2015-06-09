@@ -62,12 +62,24 @@ detectOS() {
 
 /// Copy a [Directory]'s contents to a [String] path.
 copyDirectory(Directory from, String to) {
-  for (File file in from.listSync(recursive: true).where((e) => e is File)) {
-    
-    List data = file.readAsBytesSync();
-    
-    new File(file.path.replaceAll(from.path, to))
-      ..createSync(recursive: true)
-      ..writeAsBytes(data);
+  if (os == OSX){
+    // Symlinks inside the Electron app break on a naive copy.
+    // Just use native ops for now.
+    ProcessResult results = Process.runSync(
+        'mkdir',
+        ['-p', './${to}']
+    );
+    results = Process.runSync(
+        'cp',
+        ['-r', './${from.path}/', './${to}']
+    );
+  } else {
+    for (File file in from.listSync(recursive: true).where((e) => e is File)) {
+      List data = file.readAsBytesSync();
+
+      new File(file.path.replaceAll(from.path, to))
+        ..createSync(recursive: true)
+        ..writeAsBytes(data);
+    }
   }
 }
