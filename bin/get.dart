@@ -34,20 +34,32 @@ unzipShell() {
 
   print('Extracting files (This takes a while)..');
   File archive = new File('.cache/electron-v${version}-${os}-${arch}.zip');
-  List<int> bytes = archive.readAsBytesSync();
-  Archive runnerArchive;
 
-  runnerArchive = new ZipDecoder().decodeBytes(bytes);
-  for (ArchiveFile item in runnerArchive) {
-    String name = item.name;
-    List<int> data = item.content;
-    if(name.endsWith('/')) {
-      new Directory('.cache/electron-v${version}-${os}-${arch}/$name')
-        ..createSync(recursive: true);
-    } else {
-      new File('.cache/electron-v${version}-${os}-${arch}/$name')
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(data);
+  if (os == OSX) {
+    // The archive library fails to resolve sym links on OSX.  Just use the native
+    // unzip tool.
+    ProcessResult results = Process.runSync(
+        'unzip',
+        ['${archive.path}', '-d', '.cache/electron-v${version}-${os}-${arch}']
+    );
+    print(results.stderr);
+  } else {
+    // Use the archive library to extract on non-OSX environments.
+    List<int> bytes = archive.readAsBytesSync();
+    Archive runnerArchive;
+
+    runnerArchive = new ZipDecoder().decodeBytes(bytes);
+    for (ArchiveFile item in runnerArchive) {
+      String name = item.name;
+      List<int> data = item.content;
+      if (name.endsWith('/')) {
+        new Directory('.cache/electron-v${version}-${os}-${arch}/$name')
+          ..createSync(recursive: true);
+      } else {
+        new File('.cache/electron-v${version}-${os}-${arch}/$name')
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(data);
+      }
     }
   }
 
